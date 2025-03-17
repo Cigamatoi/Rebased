@@ -3,61 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown</title>
+    <title>Countdown Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #0a0a23;
-            color: #ffffff;
+            background-color: #121212;
+            color: white;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
         }
         #countdown {
-            font-size: 2em;
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        #message {
+            font-size: 2rem;
+            display: none;
         }
         #image {
             display: none;
-            margin-top: 20px;
-            width: 50%;
+            width: 80%;
+            max-width: 600px;
             border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>IOTA Rebasing Countdown</h1>
+
+    <h1>Countdown to Event</h1>
     <div id="countdown"></div>
-    <img id="image" src="https://github.com/Cigamatoi/Rebased/blob/main/Rebased.jpg?raw=true" alt="Surprise Image">
+    <p id="message">The event has started!</p>
+    <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
 
     <script>
-        function updateCountdown() {
-            const targetDate = new Date('2024-03-31T00:00:00').getTime();
-            const now = new Date().getTime();
-            const difference = targetDate - now;
+        // Ziel-Datum für den Countdown (31. März)
+        const targetDate = new Date("2024-03-31T23:59:59").getTime();
+        const countdownElement = document.getElementById("countdown");
+        const messageElement = document.getElementById("message");
+        const imageElement = document.getElementById("image");
 
-            if (difference <= 0) {
-                document.getElementById('countdown').innerHTML = "The event has started!";
-                document.getElementById('image').style.display = 'block';
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                countdownElement.style.display = "none";
+                messageElement.style.display = "block";
+                imageElement.style.display = "block";
             } else {
-                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-                
-                document.getElementById('countdown').innerHTML = `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             }
         }
 
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
+        updateCountdown(); // Sofort aufrufen, damit kein Delay entsteht
+        const interval = setInterval(updateCountdown, 1000);
     </script>
+
 </body>
 </html>
