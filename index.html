@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Seite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #countdown {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        #message {
+            font-size: 2rem;
+            display: none;
+        }
+        #image {
+            display: none;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            #countdown {
+                font-size: 2rem;
+            }
+            #message {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Countdown zum Event</h1>
+    <div id="countdown"></div>
+    <p id="message">Das Event hat begonnen!</p>
+    <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Überraschungsbild">
+
+    <script>
+        // Ziel-Datum für den Countdown (31. März)
+        const targetDate = new Date("2024-03-31T23:59:59").getTime();
+        const countdownElement = document.getElementById("countdown");
+        const messageElement = document.getElementById("message");
+        const imageElement = document.getElementById("image");
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate
