@@ -8,8 +8,8 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #121212;
-            color: white;
+            background-color: #0A0A1A;
+            color: #FFFFFF;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -17,20 +17,19 @@
             height: 100vh;
             margin: 0;
             position: relative;
-        }
-        #countdown {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            overflow: hidden;
         }
         #message {
             font-size: 2rem;
             display: none;
+            text-shadow: 0 0 10px #1E90FF;
         }
         #image {
             display: none;
             width: 80%;
             max-width: 600px;
             border-radius: 10px;
+            border: 2px solid #1E90FF;
         }
         #frog {
             font-size: 3rem;
@@ -39,26 +38,28 @@
             left: 0;
             display: none;
             transition: left 0.5s linear;
+            color: #1E90FF;
+            text-shadow: 0 0 5px #1E90FF;
         }
         #progress-container {
             width: 50%;
-            background-color: #333;
-            border-radius: 5px;
-            margin-top: 20px;
+            background-color: #333333;
+            border-radius: 10px;
+            margin-top: 0; /* Platz für Titel entfernt */
+            border: 2px solid #1E90FF;
         }
         #progress-bar {
-            width: 100%; /* Startet voll und wird kleiner */
+            width: 0%; /* Startet bei 0% */
             height: 20px;
-            background-color: #4caf50;
-            border-radius: 5px;
-            transition: width 1s linear; /* Sanfte Änderung */
+            background: linear-gradient(to right, #FFFFFF 0%, #87CEFA 100%); /* Weiß zu Hellblau */
+            border-radius: 8px;
+            transition: width 1s linear;
+            box-shadow: 0 0 10px #1E90FF;
         }
     </style>
 </head>
 <body>
 
-    <h1>Countdown to Event</h1>
-    <div id="countdown"></div>
     <div id="progress-container">
         <div id="progress-bar"></div>
     </div>
@@ -68,10 +69,9 @@
 
     <script>
         const targetDate = new Date("2025-03-31T23:59:59").getTime();
-        const startDate = new Date().getTime(); // Startzeitpunkt jetzt
-        const totalTime = targetDate - startDate; // Gesamtdauer in Millisekunden
+        const startDate = new Date().getTime();
+        const totalTime = targetDate - startDate;
 
-        const countdownElement = document.getElementById("countdown");
         const messageElement = document.getElementById("message");
         const imageElement = document.getElementById("image");
         const frog = document.getElementById("frog");
@@ -87,22 +87,13 @@
 
             if (timeLeft <= 0) {
                 clearInterval(interval);
-                countdownElement.style.display = "none";
-                progressBar.parentElement.style.display = "none"; // Balken ausblenden
+                progressBar.parentElement.style.display = "none";
                 messageElement.style.display = "block";
                 imageElement.style.display = "block";
                 frog.style.display = "block";
                 startFrog();
             } else {
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-                // Fortschritt des Ladebalkens (von 100% nach 0%)
-                const progress = (timeLeft / totalTime) * 100;
+                const progress = (1 - timeLeft / totalTime) * 100; // Fortschritt von 0% nach 100%
                 progressBar.style.width = `${progress}%`;
             }
         }
