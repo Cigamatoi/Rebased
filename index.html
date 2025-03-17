@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown mit Ladebalken und Frosch</title>
+    <title>Frog</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,8 +37,8 @@
             border-radius: 10px;
             margin-top: 0;
             border: 2px solid #1E90FF;
-            position: relative; /* Für die Positionierung des Frosches */
-            overflow: hidden; /* Verhindert, dass der Frosch herausläuft */
+            position: relative; /* Frog position */
+            overflow: hidden; /* Don´t run away */
         }
         #progress-bar {
             width: 0%;
@@ -47,18 +47,18 @@
             border-radius: 8px;
             transition: width 1s linear;
             box-shadow: 0 0 10px #1E90FF;
-            position: relative; /* Für die Frosch-Position */
+            position: relative; /* Frog position */
         }
         #frog {
-            font-size: 1.5rem; /* Kleinere Größe, damit er im Balken passt */
+            font-size: 1.5rem; /* Scale to bar */
             position: absolute;
-            top: -10px; /* Leicht über dem Balken, um ihn sichtbar zu machen */
+            top: -10px; /* little above the bar to make it visible */
             left: 0;
-            color: #1E90FF; /* Blauer Frosch */
+            color: #1E90FF; /* Frog green */
             text-shadow: 0 0 5px #1E90FF;
-            transition: left 1s linear; /* Synchron mit dem Balken */
-            display: block; /* Immer sichtbar, bewegt sich mit dem Balken */
-            z-index: 1; /* Über dem Balken */
+            transition: left 1s linear; /* Synchronize to bar */
+            display: block; /* always visible -moves with bar */
+            z-index: 1; /* above the bar */
         }
     </style>
 </head>
@@ -66,9 +66,9 @@
 
     <div id="progress-container">
         <div id="progress-bar"></div>
-        <div id="frog">🐸</div> <!-- Frosch innerhalb des Containers -->
+        <div id="frog">🐸</div> <!-- Frog -->
     </div>
-    <p id="message">The event has started!</p>
+    <p id="message">REBASED or naked skiing!</p>
     <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
 
     <script>
