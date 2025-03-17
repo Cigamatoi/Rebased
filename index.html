@@ -31,30 +31,34 @@
             border-radius: 10px;
             border: 2px solid #1E90FF;
         }
-        #frog {
-            font-size: 3rem;
-            position: absolute;
-            top: 70%;
-            left: 0;
-            display: none;
-            transition: left 0.5s linear;
-            color: #1E90FF;
-            text-shadow: 0 0 5px #1E90FF;
-        }
         #progress-container {
             width: 50%;
             background-color: #333333;
             border-radius: 10px;
-            margin-top: 0; /* Platz für Titel entfernt */
+            margin-top: 0;
             border: 2px solid #1E90FF;
+            position: relative; /* Für die Positionierung des Frosches */
+            overflow: hidden; /* Verhindert, dass der Frosch herausläuft */
         }
         #progress-bar {
-            width: 0%; /* Startet bei 0% */
+            width: 0%;
             height: 20px;
-            background: linear-gradient(to right, #FFFFFF 0%, #87CEFA 100%); /* Weiß zu Hellblau */
+            background: linear-gradient(to right, #FFFFFF 0%, #87CEFA 100%);
             border-radius: 8px;
             transition: width 1s linear;
             box-shadow: 0 0 10px #1E90FF;
+            position: relative; /* Für die Frosch-Position */
+        }
+        #frog {
+            font-size: 1.5rem; /* Kleinere Größe, damit er im Balken passt */
+            position: absolute;
+            top: -10px; /* Leicht über dem Balken, um ihn sichtbar zu machen */
+            left: 0;
+            color: #1E90FF; /* Blauer Frosch */
+            text-shadow: 0 0 5px #1E90FF;
+            transition: left 1s linear; /* Synchron mit dem Balken */
+            display: block; /* Immer sichtbar, bewegt sich mit dem Balken */
+            z-index: 1; /* Über dem Balken */
         }
     </style>
 </head>
@@ -62,10 +66,10 @@
 
     <div id="progress-container">
         <div id="progress-bar"></div>
+        <div id="frog">🐸</div> <!-- Frosch innerhalb des Containers -->
     </div>
     <p id="message">The event has started!</p>
     <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
-    <div id="frog">🐸</div>
 
     <script>
         const targetDate = new Date("2025-03-31T23:59:59").getTime();
@@ -74,44 +78,12 @@
 
         const messageElement = document.getElementById("message");
         const imageElement = document.getElementById("image");
-        const frog = document.getElementById("frog");
         const progressBar = document.getElementById("progress-bar");
-
-        let position = 0;
-        const speed = 2;
-        const maxPosition = window.innerWidth - 50;
+        const frog = document.getElementById("frog");
+        const progressContainer = document.getElementById("progress-container");
 
         function updateCountdown() {
             const now = new Date().getTime();
             const timeLeft = targetDate - now;
 
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                progressBar.parentElement.style.display = "none";
-                messageElement.style.display = "block";
-                imageElement.style.display = "block";
-                frog.style.display = "block";
-                startFrog();
-            } else {
-                const progress = (1 - timeLeft / totalTime) * 100; // Fortschritt von 0% nach 100%
-                progressBar.style.width = `${progress}%`;
-            }
-        }
-
-        function moveFrog() {
-            position += speed;
-            if (position >= maxPosition) {
-                position = 0;
-            }
-            frog.style.left = `${position}px`;
-        }
-
-        function startFrog() {
-            setInterval(moveFrog, 50);
-        }
-
-        updateCountdown();
-        const interval = setInterval(updateCountdown, 1000);
-    </script>
-</body>
-</html>
+            if (time
