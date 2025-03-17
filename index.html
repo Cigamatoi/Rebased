@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Seite</title>
+    <title>Countdown mit Ladebalken und Frosch</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,6 +16,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative;
         }
         #countdown {
             font-size: 3rem;
@@ -31,32 +32,95 @@
             max-width: 600px;
             border-radius: 10px;
         }
-
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            #countdown {
-                font-size: 2rem;
-            }
-            #message {
-                font-size: 1.5rem;
-            }
+        #frog {
+            font-size: 3rem;
+            position: absolute;
+            top: 70%;
+            left: 0;
+            display: none;
+            transition: left 0.5s linear;
+        }
+        #progress-container {
+            width: 50%;
+            background-color: #333;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #progress-bar {
+            width: 100%; /* Startet voll und wird kleiner */
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 5px;
+            transition: width 1s linear; /* Sanfte Änderung */
         }
     </style>
 </head>
 <body>
 
-    <h1>Countdown zum Event</h1>
+    <h1>Countdown to Event</h1>
     <div id="countdown"></div>
-    <p id="message">Das Event hat begonnen!</p>
-    <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Überraschungsbild">
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    <p id="message">The event has started!</p>
+    <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
+    <div id="frog">🐸</div>
 
     <script>
-        // Ziel-Datum für den Countdown (31. März)
-        const targetDate = new Date("2024-03-31T23:59:59").getTime();
+        const targetDate = new Date("2025-03-31T23:59:59").getTime();
+        const startDate = new Date().getTime(); // Startzeitpunkt jetzt
+        const totalTime = targetDate - startDate; // Gesamtdauer in Millisekunden
+
         const countdownElement = document.getElementById("countdown");
         const messageElement = document.getElementById("message");
         const imageElement = document.getElementById("image");
+        const frog = document.getElementById("frog");
+        const progressBar = document.getElementById("progress-bar");
+
+        let position = 0;
+        const speed = 2;
+        const maxPosition = window.innerWidth - 50;
 
         function updateCountdown() {
             const now = new Date().getTime();
-            const timeLeft = targetDate
+            const timeLeft = targetDate - now;
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                countdownElement.style.display = "none";
+                progressBar.parentElement.style.display = "none"; // Balken ausblenden
+                messageElement.style.display = "block";
+                imageElement.style.display = "block";
+                frog.style.display = "block";
+                startFrog();
+            } else {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                // Fortschritt des Ladebalkens (von 100% nach 0%)
+                const progress = (timeLeft / totalTime) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+        }
+
+        function moveFrog() {
+            position += speed;
+            if (position >= maxPosition) {
+                position = 0;
+            }
+            frog.style.left = `${position}px`;
+        }
+
+        function startFrog() {
+            setInterval(moveFrog, 50);
+        }
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
