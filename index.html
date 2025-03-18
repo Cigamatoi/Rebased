@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOTA Memory Game</title>
+    <title>IOTA Whack-a-Mole</title>
     <!-- Google Fonts: Orbitron für Überschriften, Roboto für Text -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
@@ -80,7 +80,7 @@
             border: 2px solid #00D4FF;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
-        #nickname-section, #game-buttons, #quiz-container, #memory-container, #education-container, #placeholder-container, #full-ranking-container, #top-10-container {
+        #nickname-section, #game-buttons, #quiz-container, #memory-container, #whack-a-mole-container, #education-container, #placeholder-container, #full-ranking-container, #top-10-container {
             background-color: #16213E;
             padding: 20px;
             border-radius: 10px;
@@ -126,7 +126,7 @@
             background-color: #90E0EF;
             transform: scale(1.05);
         }
-        .question, #score, #memory-score {
+        .question, #score, #memory-score, #whack-a-mole-score {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
             margin-bottom: 15px;
@@ -163,7 +163,15 @@
             justify-content: center;
             margin: 20px auto;
         }
-        .memory-card {
+        #whack-a-mole-game {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+            position: relative;
+        }
+        .memory-card, .mole-hole {
             width: 100px;
             height: 100px;
             background-color: #1A1A2E;
@@ -177,23 +185,39 @@
             transition: transform 0.5s, box-shadow 0.3s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-        .memory-card:hover {
+        .memory-card:hover, .mole-hole:hover {
             box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
         }
-        .memory-card img {
+        .memory-card img, .mole-hole img.target {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 6px;
             display: none;
         }
-        .memory-card.flipped img, .memory-card.matched img {
+        .memory-card.flipped img, .memory-card.matched img, .mole-hole.active img.target {
             display: block;
         }
         .memory-card.flipped, .memory-card.matched {
             background-color: #00D4FF;
             transform: rotateY(180deg);
             box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
+        }
+        .mole-hole.active {
+            background-color: #00D4FF;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
+        }
+        .hammer {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: url('https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/BANHAMMER.JPG') no-repeat center;
+            background-size: contain;
+            display: none;
+            pointer-events: none;
+            z-index: 10;
+            transition: opacity 0.1s;
         }
         #full-ranking-list, #top-10-list {
             margin-top: 15px;
@@ -207,12 +231,16 @@
             color: #E0E0E0;
         }
         @media (max-width: 600px) {
-            #memory-game {
+            #memory-game, #whack-a-mole-game {
                 grid-template-columns: repeat(4, 80px);
             }
-            .memory-card {
+            .memory-card, .mole-hole {
                 width: 80px;
                 height: 80px;
+            }
+            .hammer {
+                width: 64px;
+                height: 64px;
             }
             #nickname-input {
                 width: 100%;
@@ -220,7 +248,7 @@
             #progress-container {
                 width: 80%;
             }
-            #quiz-container, #memory-container, #education-container, #placeholder-container, #full-ranking-container, #top-10-container {
+            #quiz-container, #memory-container, #whack-a-mole-container, #education-container, #placeholder-container, #full-ranking-container, #top-10-container {
                 max-width: 100%;
             }
         }
@@ -228,7 +256,7 @@
 </head>
 <body>
     <header>
-        <h1>IOTA Memory Game</h1>
+        <h1>IOTA Whack-a-Mole</h1>
     </header>
 
     <div id="countdown"></div>
@@ -246,6 +274,7 @@
     <div id="game-buttons">
         <button class="game-button" onclick="showSection('quiz')">Quiz</button>
         <button class="game-button" onclick="showSection('memory')">Memory</button>
+        <button class="game-button" onclick="showSection('whack-a-mole')">Whack-a-Mole</button>
         <button class="game-button" onclick="showSection('education')">Education</button>
         <button class="game-button" onclick="showSection('placeholder')">Placeholder</button>
     </div>
@@ -263,6 +292,14 @@
     <div id="memory-container">
         <div id="memory-game"></div>
         <div id="memory-score"></div>
+    </div>
+
+    <!-- Whack-a-Mole Section -->
+    <div id="whack-a-mole-container">
+        <div id="whack-a-mole-game"></div>
+        <div id="whack-a-mole-score">Score: 0</div>
+        <div id="whack-a-mole-timer">Time: 30s</div>
+        <div class="hammer" id="hammer"></div>
     </div>
 
     <!-- Education Section (Placeholder) -->
@@ -406,4 +443,337 @@
             },
             {
                 question: "What staking reward range does IOTA Rebased offer for $IOTA holders?",
-                options: ["1-2% APY", "5-7% APY", "10-15% APY", "20
+                options: ["1-2% APY", "5-7% APY", "10-15% APY", "20-25% APY"],
+                correct: 2
+            },
+            {
+                question: "What key milestone was achieved with the IOTA Rebased vote in December 2024?",
+                options: ["Approval by all token holders", "Launch of the mainnet", "Removal of all validators", "Increase in transaction fees"],
+                correct: 0
+            },
+            {
+                question: "What new tool is being prepared for IOTA Rebased as part of the mainnet preparations in March 2025?",
+                options: ["A new cryptocurrency", "A wallet extension and dashboard dApp", "A centralized exchange", "A hardware mining device"],
+                correct: 1
+            },
+            {
+                question: "What is a new feature included in the updated IOTA Rebased SDKs mentioned in March 2025?",
+                options: ["Support for Bitcoin smart contracts", "Move IDE plugins and CLI enhancements", "Increased transaction fees", "Removal of EVM compatibility"],
+                correct: 1
+            },
+            {
+                question: "What was a focus of the IOTA Rebased test network update in December 2024?",
+                options: ["Adding more centralized nodes", "Increasing the number of validators", "Reducing staking rewards", "Launching a new token"],
+                correct: 1
+            },
+            {
+                question: "What type of integration was highlighted for IOTA Rebased in March 2025?",
+                options: ["Integration with traditional banking systems", "Ledger integration for wallet support", "Support for fiat currencies", "Removal of smart contracts"],
+                correct: 1
+            }
+        ];
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").textContent = currentQuestion.question;
+            const optionsElement = document.getElementById("options");
+            optionsElement.innerHTML = "";
+            document.getElementById("feedback").style.display = "none";
+            document.getElementById("next-btn").style.display = "none";
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionButton = document.createElement("div");
+                optionButton.classList.add("option");
+                optionButton.textContent = option;
+                optionButton.addEventListener("click", () => checkAnswer(index));
+                optionsElement.appendChild(optionButton);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const feedbackElement = document.getElementById("feedback");
+            feedbackElement.style.display = "block";
+            if (selectedIndex === currentQuestion.correct) {
+                feedbackElement.textContent = "Correct!";
+                feedbackElement.style.color = "#90E0EF";
+                quizScore++;
+            } else {
+                feedbackElement.textContent = `Wrong! The correct answer was: ${currentQuestion.options[currentQuestion.correct]}`;
+                feedbackElement.style.color = "#FF6B6B";
+            }
+            document.getElementById("next-btn").style.display = "block";
+            const optionButtons = document.getElementsByClassName("option");
+            for (let button of optionButtons) {
+                button.style.pointerEvents = "none";
+            }
+        }
+
+        document.getElementById("next-btn").addEventListener("click", () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById("quiz-container").style.display = "none";
+                document.getElementById("score").style.display = "block";
+                document.getElementById("score").textContent = `Quiz Score: ${quizScore}/${questions.length}`;
+                saveScore("quiz", quizScore);
+                updateTop10();
+            }
+        });
+
+        // Memory-Spiel Logik
+        const memoryImages = [
+            { id: 1, src: "https://pbs.twimg.com/profile_images/1267400480734490624/uq3Cten-_400x400.jpg", name: "@IOTA" },
+            { id: 2, src: "https://pbs.twimg.com/profile_images/1897839088537157633/4uNc3CBr_400x400.jpg", name: "@KUTKRAFT" },
+            { id: 3, src: "https://pbs.twimg.com/profile_images/1490008172253392898/z6JVqunq_400x400.jpg", name: "@id_iota" },
+            { id: 4, src: "https://pbs.twimg.com/profile_images/1867537903091691525/Sjm8H3fd_400x400.jpg", name: "@PhyloIOTA" },
+            { id: 5, src: "https://pbs.twimg.com/profile_images/1639823618665226240/yVQrmWhl_400x400.jpg", name: "@MarkMalytschew" },
+            { id: 6, src: "https://pbs.twimg.com/profile_images/1871082170342645760/n-0GtgXk_400x400.jpg", name: "@DomSchiener" },
+            { id: 7, src: "https://pbs.twimg.com/profile_images/1877282657861545984/QXCCtR7G_400x400.jpg", name: "@Nightly_app" },
+            { id: 8, src: "https://pbs.twimg.com/profile_images/1876261964537581568/kLE50Mqq_400x400.png", name: "@DeeprFinance" },
+            { id: 9, src: "https://pbs.twimg.com/profile_images/1741529019093233664/g9mk8mYg_400x400.png", name: "@MagicSeaDEX" },
+            { id: 10, src: "https://pbs.twimg.com/profile_images/1453865643053182980/s9_nNOkD_400x400.jpg", name: "@StargateFinance" },
+            { id: 11, src: "https://pbs.twimg.com/profile_images/1765400587913326593/4yin1aKU_400x400.jpg", name: "@wagmicom" },
+            { id: 12, src: "https://pbs.twimg.com/profile_images/1805614841538707456/dI5erRPx_400x400.jpg", name: "@cyberperp" },
+            { id: 13, src: "https://pbs.twimg.com/profile_images/1689127977584660480/pX_tl20K_400x400.png", name: "@VelocimeterDEX" },
+            { id: 14, src: "https://pbs.twimg.com/profile_images/1805346325925384192/2FsT1FFp_400x400.jpg", name: "@iolendfi" },
+            { id: 15, src: "https://pbs.twimg.com/profile_images/1846083823240728579/_jeMlJZq_400x400.png", name: "Additional Image 1" },
+            { id: 16, src: "https://pbs.twimg.com/profile_images/1858646093153599488/mtDLTssy_400x400.jpg", name: "Additional Image 2" }
+        ];
+
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let memoryScore = 0;
+
+        function initMemoryGame() {
+            const memoryGame = document.getElementById("memory-game");
+            memoryGame.innerHTML = "";
+            memoryCards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            memoryScore = 0;
+            document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
+
+            const cardsToUse = [...memoryImages, ...memoryImages];
+            cardsToUse.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < 32; i++) {
+                const card = cardsToUse[i];
+                if (card) {
+                    const cardElement = document.createElement("div");
+                    cardElement.classList.add("memory-card");
+                    cardElement.dataset.id = card.id;
+                    cardElement.innerHTML = `<img src="${card.src}" alt="${card.name}">`;
+                    cardElement.addEventListener("click", () => flipCard(cardElement));
+                    memoryGame.appendChild(cardElement);
+                    memoryCards.push(cardElement);
+                }
+            }
+        }
+
+        function flipCard(card) {
+            if (flippedCards.length < 2 && !flippedCards.includes(card) && !card.classList.contains("matched")) {
+                card.classList.add("flipped");
+                flippedCards.push(card);
+                memoryScore++;
+                document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.id === card2.dataset.id) {
+                card1.classList.add("matched");
+                card2.classList.add("matched");
+                matchedPairs++;
+                if (matchedPairs === 16) {
+                    setTimeout(() => {
+                        document.getElementById("memory-container").style.display = "none";
+                        document.getElementById("score").style.display = "block";
+                        document.getElementById("score").textContent = `Memory Moves: ${memoryScore}`;
+                        saveScore("memory", memoryScore);
+                        updateTop10();
+                    }, 500);
+                }
+            } else {
+                card1.classList.remove("flipped");
+                card2.classList.remove("flipped");
+            }
+            flippedCards = [];
+        }
+
+        // Whack-a-Mole Logik
+        let whackScore = 0;
+        let whackTimer = 30;
+        let whackGameActive = false;
+        let whackInterval = null;
+        const targetImage = "https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/CFB.JPG";
+        const hammerImage = "https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/BANHAMMER.JPG";
+        const hammer = document.getElementById("hammer");
+
+        function initWhackAMole() {
+            const whackGame = document.getElementById("whack-a-mole-game");
+            whackGame.innerHTML = "";
+            whackScore = 0;
+            whackTimer = 30;
+            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+
+            for (let i = 0; i < 16; i++) {
+                const hole = document.createElement("div");
+                hole.classList.add("mole-hole");
+                hole.dataset.index = i;
+                hole.innerHTML = `<img src="${targetImage}" class="target" alt="Head">`;
+                hole.addEventListener("click", (e) => whackMole(e, hole));
+                whackGame.appendChild(hole);
+            }
+            whackGameActive = true;
+            startWhackGame();
+        }
+
+        function startWhackGame() {
+            whackInterval = setInterval(() => {
+                if (whackTimer <= 0) {
+                    clearInterval(whackInterval);
+                    whackGameActive = false;
+                    document.getElementById("whack-a-mole-container").style.display = "none";
+                    document.getElementById("score").style.display = "block";
+                    document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
+                    saveScore("whack-a-mole", whackScore);
+                    updateTop10();
+                    return;
+                }
+                whackTimer--;
+                document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+
+                const holes = document.getElementsByClassName("mole-hole");
+                for (let hole of holes) {
+                    hole.classList.remove("active");
+                }
+
+                const randomHole = holes[Math.floor(Math.random() * holes.length)];
+                randomHole.classList.add("active");
+                setTimeout(() => {
+                    if (randomHole.classList.contains("active") && whackGameActive) {
+                        randomHole.classList.remove("active");
+                    }
+                }, 1000);
+            }, 1000);
+        }
+
+        function whackMole(event, hole) {
+            if (hole.classList.contains("active") && whackGameActive) {
+                whackScore++;
+                document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+                hole.classList.remove("active");
+
+                // Hammer-Animation
+                const rect = hole.getBoundingClientRect();
+                hammer.style.left = `${rect.left - 10}px`;
+                hammer.style.top = `${rect.top - 10}px`;
+                hammer.style.display = "block";
+                setTimeout(() => {
+                    hammer.style.display = "none";
+                }, 100);
+            }
+            event.stopPropagation(); // Verhindert Event-Bubbling
+        }
+
+        // Speicher-Logik für Quiz, Memory und Whack-a-Mole
+        function saveScore(gameType, gameScore) {
+            const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+            rankings.push({ nickname, gameType, score: gameScore });
+            rankings.sort((a, b) => {
+                if (a.gameType === "quiz" && b.gameType === "quiz") {
+                    return b.score - a.score; // Quiz: Höherer Score ist besser
+                } else if (a.gameType === "memory" && b.gameType === "memory") {
+                    return a.score - b.score; // Memory: Weniger Moves sind besser
+                } else if (a.gameType === "whack-a-mole" && b.gameType === "whack-a-mole") {
+                    return b.score - a.score; // Whack-a-Mole: Höherer Score ist besser
+                }
+                return 0;
+            });
+            localStorage.setItem("rankings", JSON.stringify(rankings));
+        }
+
+        function updateTop10() {
+            const top10List = document.getElementById("top-10-list");
+            top10List.innerHTML = "";
+            const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+            const top10 = rankings.slice(0, 10);
+            top10.forEach(entry => {
+                const li = document.createElement("li");
+                if (entry.gameType === "quiz") {
+                    li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
+                } else if (entry.gameType === "memory") {
+                    li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
+                } else if (entry.gameType === "whack-a-mole") {
+                    li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                }
+                top10List.appendChild(li);
+            });
+        }
+
+        function showFullRanking() {
+            const fullRankingList = document.getElementById("full-ranking-list");
+            fullRankingList.innerHTML = "";
+            const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+            rankings.forEach(entry => {
+                const li = document.createElement("li");
+                if (entry.gameType === "quiz") {
+                    li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
+                } else if (entry.gameType === "memory") {
+                    li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
+                } else if (entry.gameType === "whack-a-mole") {
+                    li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                }
+                fullRankingList.appendChild(li);
+            });
+        }
+
+        // Initialisiere Top 10 Liste beim Laden der Seite
+        updateTop10();
+
+        // Funktion zum Anzeigen der verschiedenen Abschnitte
+        function showSection(section) {
+            document.getElementById("quiz-container").style.display = "none";
+            document.getElementById("memory-container").style.display = "none";
+            document.getElementById("whack-a-mole-container").style.display = "none";
+            document.getElementById("education-container").style.display = "none";
+            document.getElementById("placeholder-container").style.display = "none";
+            document.getElementById("full-ranking-container").style.display = "none";
+            document.getElementById("score").style.display = "none";
+
+            if (section === "quiz") {
+                document.getElementById("quiz-container").style.display = "block";
+                currentQuestionIndex = 0;
+                quizScore = 0;
+                loadQuestion();
+            } else if (section === "memory") {
+                document.getElementById("memory-container").style.display = "block";
+                initMemoryGame();
+            } else if (section === "whack-a-mole") {
+                document.getElementById("whack-a-mole-container").style.display = "block";
+                initWhackAMole();
+            } else if (section === "education") {
+                document.getElementById("education-container").style.display = "block";
+            } else if (section === "placeholder") {
+                document.getElementById("placeholder-container").style.display = "block";
+            } else if (section === "full-ranking") {
+                document.getElementById("full-ranking-container").style.display = "block";
+                showFullRanking();
+            }
+        }
+
+        // Education und Placeholder bleiben Platzhalter
+        document.getElementById("education-container").innerHTML = '<div id="education-placeholder">EDUCATION content coming soon! Stay tuned.</div>';
+        document.getElementById("placeholder-container").innerHTML = '<div id="placeholder-placeholder">New game coming soon! Stay tuned.</div>';
+    </script>
+</body>
+</html>
