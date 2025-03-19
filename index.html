@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOTA Whack-a-Mole</title>
+    <title>Ciga Ma Toi</title>
     <!-- Google Fonts: Orbitron für Überschriften, Roboto für Text -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #1A1A2E;
+            background: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%);
             color: #FFFFFF;
             display: flex;
             flex-direction: column;
@@ -21,45 +21,46 @@
         }
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             color: #00D4FF;
-            text-shadow: 0 0 10px #00D4FF;
+            text-shadow: 0 0 15px #00D4FF, 0 0 30px #00D4FF;
             margin: 0;
+            letter-spacing: 2px;
         }
         #countdown {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            margin: 10px 0;
+            font-size: 2.2rem;
+            margin: 15px 0;
             color: #00D4FF;
             text-shadow: 0 0 5px #00D4FF;
         }
         #progress-container {
-            width: 60%;
-            background-color: #16213E;
-            border-radius: 10px;
-            padding: 5px;
-            margin: 15px 0;
+            width: 70%;
+            background-color: #0F0F1A;
+            border-radius: 12px;
+            padding: 6px;
+            margin: 20px 0;
             border: 2px solid #00D4FF;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
             position: relative;
             overflow: hidden;
         }
         #progress-bar {
             width: 0%;
-            height: 20px;
-            background: linear-gradient(to right, #00D4FF, #90E0EF);
+            height: 24px;
+            background: #00D4FF;
             border-radius: 8px;
             transition: width 1s linear;
-            box-shadow: 0 0 5px #00D4FF;
+            box-shadow: 0 0 10px #00D4FF;
         }
         #frog {
             font-size: 1.5rem;
             position: absolute;
-            top: -10px;
+            top: -8px;
             left: 0;
             color: #00D4FF;
             text-shadow: 0 0 5px #00D4FF;
@@ -67,7 +68,7 @@
         }
         #message {
             font-size: 1.5rem;
-            margin: 10px 0;
+            margin: 15px 0;
             color: #E0E0E0;
             display: none;
             text-shadow: 0 0 5px #00D4FF;
@@ -76,33 +77,38 @@
             display: none;
             width: 80%;
             max-width: 500px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 2px solid #00D4FF;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
         }
-        #nickname-section, #game-buttons, #quiz-container, #memory-container, #whack-a-mole-container, #education-container, #placeholder-container, #full-ranking-container, #top-10-container {
-            background-color: #16213E;
-            padding: 20px;
-            border-radius: 10px;
+        #nickname-section, #game-buttons, #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
+            background: linear-gradient(145deg, #16213E, #1A1A2E);
+            padding: 25px;
+            border-radius: 15px;
             border: 2px solid #00D4FF;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), 0 8px 20px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 600px;
-            margin: 15px 0;
+            margin: 20px 0;
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+        #nickname-section:hover, #game-buttons:hover, #quiz-container:hover, #memory-container:hover, #whack-a-mole-container:hover, #snake-container:hover, #flappy-frog-container:hover, #full-ranking-container:hover, #top-10-container:hover {
+            transform: translateY(-5px);
         }
         #nickname-input {
             padding: 12px;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #00D4FF;
             background-color: #1A1A2E;
             color: #FFFFFF;
             font-size: 1rem;
             width: 70%;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         #nickname-input:focus {
             border-color: #90E0EF;
+            box-shadow: 0 0 10px rgba(144, 224, 239, 0.5);
             outline: none;
         }
         #nickname-error {
@@ -111,22 +117,23 @@
             margin-top: 10px;
             display: none;
         }
-        #submit-nickname, .game-button, #next-btn, #view-full-ranking {
-            background-color: #00D4FF;
-            padding: 12px 25px;
+        #submit-nickname, .game-button, #next-btn, .back-btn, #view-full-ranking, #play-button {
+            background: linear-gradient(90deg, #00D4FF, #90E0EF);
+            padding: 12px 30px;
             border: none;
-            border-radius: 5px;
-            color: #FFFFFF;
+            border-radius: 8px;
+            color: #1A1A2E;
             font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: transform 0.2s, box-shadow 0.3s;
             margin: 10px;
         }
-        #submit-nickname:hover, .game-button:hover, #next-btn:hover, #view-full-ranking:hover {
-            background-color: #90E0EF;
-            transform: scale(1.05);
+        #submit-nickname:hover, .game-button:hover, #next-btn:hover, .back-btn:hover, #view-full-ranking:hover, #play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
         }
-        .question, #score, #memory-score, #whack-a-mole-score {
+        .question, #score, #memory-score, #whack-a-mole-score, #snake-score, #flappy-frog-score {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
             margin-bottom: 15px;
@@ -136,20 +143,21 @@
         .options {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .option {
-            background-color: #1A1A2E;
+            background: #1A1A2E;
             padding: 12px;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #00D4FF;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: background-color 0.3s, transform 0.2s;
             font-size: 1rem;
         }
         .option:hover {
             background-color: #00D4FF;
             transform: scale(1.05);
+            color: #1A1A2E;
         }
         #feedback {
             margin-top: 15px;
@@ -170,13 +178,14 @@
             justify-content: center;
             margin: 20px auto;
             position: relative;
+            cursor: url('https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/BANHAMMER.JPG') 40 40, auto; /* Hotspot anpassen */
         }
         .memory-card, .mole-hole {
             width: 100px;
             height: 100px;
             background-color: #1A1A2E;
             border: 2px solid #00D4FF;
-            border-radius: 8px;
+            border-radius: 50%; /* Kreise statt Vierecke */
             cursor: pointer;
             display: flex;
             justify-content: center;
@@ -192,7 +201,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 50%; /* Kreise für Bilder */
             display: none;
         }
         .memory-card.flipped img, .memory-card.matched img, .mole-hole.active img.target {
@@ -219,6 +228,18 @@
             z-index: 10;
             transition: opacity 0.1s;
         }
+        #snake-canvas {
+            border: 2px solid #00D4FF;
+            background-color: #1A1A2E;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        #flappy-frog-canvas {
+            border: 2px solid #00D4FF;
+            background-color: #1A1A2E;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
         #full-ranking-list, #top-10-list {
             margin-top: 15px;
             font-family: 'Orbitron', sans-serif;
@@ -229,6 +250,12 @@
         #full-ranking-list li, #top-10-list li {
             margin: 8px 0;
             color: #E0E0E0;
+        }
+        #next-btn {
+            display: none;
+        }
+        #score {
+            display: none;
         }
         @media (max-width: 600px) {
             #memory-game, #whack-a-mole-game {
@@ -242,13 +269,21 @@
                 width: 64px;
                 height: 64px;
             }
+            #snake-canvas {
+                width: 320px;
+                height: 320px;
+            }
+            #flappy-frog-canvas {
+                width: 320px;
+                height: 480px;
+            }
             #nickname-input {
                 width: 100%;
             }
             #progress-container {
                 width: 80%;
             }
-            #quiz-container, #memory-container, #whack-a-mole-container, #education-container, #placeholder-container, #full-ranking-container, #top-10-container {
+            #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
                 max-width: 100%;
             }
         }
@@ -256,7 +291,7 @@
 </head>
 <body>
     <header>
-        <h1>IOTA Whack-a-Mole</h1>
+        <h1>Ciga Ma Toi</h1>
     </header>
 
     <div id="countdown"></div>
@@ -271,58 +306,67 @@
         <div id="nickname-error"></div>
         <button id="submit-nickname" onclick="submitNickname()">Submit</button>
     </div>
-    <div id="game-buttons">
+    <div id="game-buttons" style="display: none;">
         <button class="game-button" onclick="showSection('quiz')">Quiz</button>
         <button class="game-button" onclick="showSection('memory')">Memory</button>
         <button class="game-button" onclick="showSection('whack-a-mole')">Whack-a-Mole</button>
-        <button class="game-button" onclick="showSection('education')">Education</button>
-        <button class="game-button" onclick="showSection('placeholder')">Placeholder</button>
+        <button class="game-button" onclick="showSection('snake')">Snake</button>
+        <button class="game-button" onclick="showSection('flappy-frog')">Flappy Frog</button>
+        <button class="game-button" onclick="showSection('full-ranking')">Full Leaderboard</button>
     </div>
 
     <!-- Quiz Section -->
-    <div id="quiz-container">
+    <div id="quiz-container" style="display: none;">
         <div class="question" id="question"></div>
         <div class="options" id="options"></div>
         <div id="feedback"></div>
         <button id="next-btn">Next Question</button>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
     <div id="score"></div>
 
     <!-- Memory Section -->
-    <div id="memory-container">
+    <div id="memory-container" style="display: none;">
         <div id="memory-game"></div>
         <div id="memory-score"></div>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <!-- Whack-a-Mole Section -->
-    <div id="whack-a-mole-container">
+    <div id="whack-a-mole-container" style="display: none;">
         <div id="whack-a-mole-game"></div>
         <div id="whack-a-mole-score">Score: 0</div>
         <div id="whack-a-mole-timer">Time: 30s</div>
         <div class="hammer" id="hammer"></div>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
-    <!-- Education Section (Placeholder) -->
-    <div id="education-container">
-        <div id="education-placeholder">EDUCATION content coming soon! Stay tuned.</div>
+    <!-- Snake Section -->
+    <div id="snake-container" style="display: none;">
+        <canvas id="snake-canvas" width="400" height="400"></canvas>
+        <div id="snake-score">Score: 0</div>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
-    <!-- Placeholder Section (Placeholder) -->
-    <div id="placeholder-container">
-        <div id="placeholder-placeholder">New game coming soon! Stay tuned.</div>
+    <!-- Flappy Frog Section -->
+    <div id="flappy-frog-container" style="display: none;">
+        <canvas id="flappy-frog-canvas" width="400" height="600"></canvas>
+        <div id="flappy-frog-score">Score: 0</div>
+        <button id="play-button" onclick="startFlappyGame()">Play</button>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <!-- Full Ranking Section -->
-    <div id="full-ranking-container">
+    <div id="full-ranking-container" style="display: none;">
         <h1>Full Leaderboard</h1>
         <ol id="full-ranking-list"></ol>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <!-- Top 10 Leaderboard -->
-    <div id="top-10-container">
+    <div id="top-10-container" style="display: none;">
         <h1>Top 10 Players</h1>
         <ol id="top-10-list"></ol>
-        <button id="view-full-ranking" onclick="showSection('full-ranking')">View Full Ranking</button>
     </div>
 
     <script>
@@ -386,10 +430,22 @@
             }
 
             nickname = input;
+            localStorage.setItem("nickname", nickname);
             errorElement.style.display = "none";
             document.getElementById("nickname-section").style.display = "none";
             document.getElementById("game-buttons").style.display = "flex";
+            document.getElementById("top-10-container").style.display = "block";
         }
+
+        window.onload = function() {
+            const savedNickname = localStorage.getItem("nickname");
+            if (savedNickname) {
+                nickname = savedNickname;
+                document.getElementById("nickname-section").style.display = "none";
+                document.getElementById("game-buttons").style.display = "flex";
+                document.getElementById("top-10-container").style.display = "block";
+            }
+        };
 
         // Quiz-Logik
         let quizScore = 0;
@@ -673,7 +729,6 @@
                 document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
                 hole.classList.remove("active");
 
-                // Hammer-Animation
                 const rect = hole.getBoundingClientRect();
                 hammer.style.left = `${rect.left - 10}px`;
                 hammer.style.top = `${rect.top - 10}px`;
@@ -682,20 +737,253 @@
                     hammer.style.display = "none";
                 }, 100);
             }
-            event.stopPropagation(); // Verhindert Event-Bubbling
+            event.stopPropagation();
         }
 
-        // Speicher-Logik für Quiz, Memory und Whack-a-Mole
+        // Snake-Spiel Logik
+        const snakeCanvas = document.getElementById("snake-canvas");
+        const snakeCtx = snakeCanvas.getContext("2d");
+        const snakeGridSize = 20;
+        const snakeTileCount = snakeCanvas.width / snakeGridSize;
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let dx = 0;
+        let dy = 0;
+        let snakeScore = 0;
+        let snakeGameActive = false;
+        let snakeInterval = null;
+
+        function initSnakeGame() {
+            snake = [{ x: 10, y: 10 }];
+            food = { x: 15, y: 15 };
+            dx = 0;
+            dy = 0;
+            snakeScore = 0;
+            snakeGameActive = true;
+            document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
+            document.addEventListener("keydown", changeDirection);
+            startSnakeGame();
+        }
+
+        function startSnakeGame() {
+            if (snakeInterval) clearInterval(snakeInterval);
+            snakeInterval = setInterval(() => {
+                if (!snakeGameActive) return;
+                moveSnake();
+                drawSnakeGame();
+            }, 100);
+        }
+
+        function changeDirection(event) {
+            const key = event.key;
+            if (key === "ArrowUp" || key === "w" || key === "W") {
+                if (dy !== 1) {
+                    dx = 0;
+                    dy = -1;
+                }
+            } else if (key === "ArrowDown" || key === "s" || key === "S") {
+                if (dy !== -1) {
+                    dx = 0;
+                    dy = 1;
+                }
+            } else if (key === "ArrowLeft" || key === "a" || key === "A") {
+                if (dx !== 1) {
+                    dx = -1;
+                    dy = 0;
+                }
+            } else if (key === "ArrowRight" || key === "d" || key === "D") {
+                if (dx !== -1) {
+                    dx = 1;
+                    dy = 0;
+                }
+            }
+        }
+
+        function moveSnake() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            if (head.x < 0 || head.x >= snakeTileCount || head.y < 0 || head.y >= snakeTileCount) {
+                endSnakeGame();
+                return;
+            }
+
+            for (let i = 0; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    endSnakeGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                snakeScore++;
+                document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function spawnFood() {
+            food.x = Math.floor(Math.random() * snakeTileCount);
+            food.y = Math.floor(Math.random() * snakeTileCount);
+
+            for (let i = 0; i < snake.length; i++) {
+                if (food.x === snake[i].x && food.y === snake[i].y) {
+                    spawnFood();
+                    break;
+                }
+            }
+        }
+
+        function drawSnakeGame() {
+            snakeCtx.clearRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+            snakeCtx.fillStyle = "#00D4FF";
+            snake.forEach(segment => {
+                snakeCtx.fillRect(segment.x * snakeGridSize, segment.y * snakeGridSize, snakeGridSize - 2, snakeGridSize - 2);
+            });
+
+            snakeCtx.fillStyle = "#FF6B6B";
+            snakeCtx.beginPath();
+            snakeCtx.arc(food.x * snakeGridSize + snakeGridSize / 2, food.y * snakeGridSize + snakeGridSize / 2, snakeGridSize / 2 - 2, 0, Math.PI * 2);
+            snakeCtx.fill();
+        }
+
+        function endSnakeGame() {
+            snakeGameActive = false;
+            clearInterval(snakeInterval);
+            document.getElementById("snake-container").style.display = "none";
+            document.getElementById("score").style.display = "block";
+            document.getElementById("score").textContent = `Snake Score: ${snakeScore}`;
+            saveScore("snake", snakeScore);
+            updateTop10();
+        }
+
+        // Flappy Frog Logik
+        const flappyCanvas = document.getElementById("flappy-frog-canvas");
+        const flappyCtx = flappyCanvas.getContext("2d");
+        let frogY = flappyCanvas.height / 2;
+        let gravity = 0.5;
+        let velocity = 0;
+        let gameOver = false;
+        let flappyScore = 0;
+        let pipes = [];
+        let frameCount = 0;
+        let gameStarted = false;
+
+        function initFlappyFrog() {
+            frogY = flappyCanvas.height / 2;
+            velocity = 0;
+            gameOver = false;
+            flappyScore = 0;
+            pipes = [];
+            document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
+            document.removeEventListener("keydown", jump);
+            document.removeEventListener("click", jump);
+            drawFlappyGame();
+        }
+
+        function startFlappyGame() {
+            gameStarted = true;
+            document.getElementById("play-button").style.display = "none";
+            document.addEventListener("keydown", jump);
+            document.addEventListener("click", jump);
+            const gameLoop = setInterval(() => {
+                if (gameOver) {
+                    clearInterval(gameLoop);
+                    document.getElementById("flappy-frog-container").style.display = "none";
+                    document.getElementById("score").style.display = "block";
+                    document.getElementById("score").textContent = `Flappy Frog Score: ${flappyScore}`;
+                    saveScore("flappy-frog", flappyScore);
+                    updateTop10();
+                    return;
+                }
+
+                frameCount++;
+                if (frameCount % 100 === 0) {
+                    const pipeGap = 150;
+                    const pipeHeight = Math.random() * (flappyCanvas.height - pipeGap - 100) + 50;
+                    pipes.push({
+                        x: flappyCanvas.width,
+                        topHeight: pipeHeight,
+                        bottomHeight: flappyCanvas.height - pipeHeight - pipeGap
+                    });
+                }
+
+                velocity += gravity;
+                frogY += velocity;
+
+                pipes = pipes.filter(pipe => pipe.x > -50);
+                pipes.forEach(pipe => pipe.x -= 2);
+
+                if (frogY > flappyCanvas.height || frogY < 0) {
+                    gameOver = true;
+                }
+
+                pipes.forEach(pipe => {
+                    if (
+                        (flappyCanvas.width / 2 > pipe.x && flappyCanvas.width / 2 < pipe.x + 50) &&
+                        (frogY < pipe.topHeight || frogY > flappyCanvas.height - pipe.bottomHeight)
+                    ) {
+                        gameOver = true;
+                    }
+                    if (flappyCanvas.width / 2 > pipe.x + 50 && flappyCanvas.width / 2 < pipe.x + 60) {
+                        flappyScore++;
+                        document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
+                    }
+                });
+
+                drawFlappyGame();
+            }, 16);
+        }
+
+        function jump() {
+            if (gameStarted && !gameOver) {
+                velocity = -8;
+            }
+        }
+
+        function drawFlappyGame() {
+            flappyCtx.clearRect(0, 0, flappyCanvas.width, flappyCanvas.height);
+
+            if (!gameStarted) {
+                flappyCtx.fillStyle = "#FFFFFF";
+                flappyCtx.font = "30px Orbitron";
+                flappyCtx.fillText("Click Play to Start", flappyCanvas.width / 2 - 120, flappyCanvas.height / 2);
+                return;
+            }
+
+            flappyCtx.fillStyle = "#90EE90";
+            flappyCtx.beginPath();
+            flappyCtx.arc(flappyCanvas.width / 2, frogY, 20, 0, Math.PI * 2);
+            flappyCtx.fill();
+            flappyCtx.fillStyle = "#000000";
+            flappyCtx.fillText("🐸", flappyCanvas.width / 2 - 10, frogY + 5);
+
+            flappyCtx.fillStyle = "#00D4FF";
+            pipes.forEach(pipe => {
+                flappyCtx.fillRect(pipe.x, 0, 50, pipe.topHeight);
+                flappyCtx.fillRect(pipe.x, flappyCanvas.height - pipe.bottomHeight, 50, pipe.bottomHeight);
+            });
+        }
+
+        // Speicher-Logik für Quiz, Memory, Whack-a-Mole, Snake und Flappy Frog
         function saveScore(gameType, gameScore) {
             const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
             rankings.push({ nickname, gameType, score: gameScore });
             rankings.sort((a, b) => {
                 if (a.gameType === "quiz" && b.gameType === "quiz") {
-                    return b.score - a.score; // Quiz: Höherer Score ist besser
+                    return b.score - a.score;
                 } else if (a.gameType === "memory" && b.gameType === "memory") {
-                    return a.score - b.score; // Memory: Weniger Moves sind besser
+                    return a.score - b.score;
                 } else if (a.gameType === "whack-a-mole" && b.gameType === "whack-a-mole") {
-                    return b.score - a.score; // Whack-a-Mole: Höherer Score ist besser
+                    return b.score - a.score;
+                } else if (a.gameType === "snake" && b.gameType === "snake") {
+                    return b.score - a.score;
+                } else if (a.gameType === "flappy-frog" && b.gameType === "flappy-frog") {
+                    return b.score - a.score;
                 }
                 return 0;
             });
@@ -715,6 +1003,10 @@
                     li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
                 } else if (entry.gameType === "whack-a-mole") {
                     li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                } else if (entry.gameType === "snake") {
+                    li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
+                } else if (entry.gameType === "flappy-frog") {
+                    li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
                 }
                 top10List.appendChild(li);
             });
@@ -732,25 +1024,32 @@
                     li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
                 } else if (entry.gameType === "whack-a-mole") {
                     li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                } else if (entry.gameType === "snake") {
+                    li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
+                } else if (entry.gameType === "flappy-frog") {
+                    li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
                 }
                 fullRankingList.appendChild(li);
             });
         }
 
-        // Initialisiere Top 10 Liste beim Laden der Seite
         updateTop10();
 
-        // Funktion zum Anzeigen der verschiedenen Abschnitte
         function showSection(section) {
             document.getElementById("quiz-container").style.display = "none";
             document.getElementById("memory-container").style.display = "none";
             document.getElementById("whack-a-mole-container").style.display = "none";
-            document.getElementById("education-container").style.display = "none";
-            document.getElementById("placeholder-container").style.display = "none";
+            document.getElementById("snake-container").style.display = "none";
+            document.getElementById("flappy-frog-container").style.display = "none";
             document.getElementById("full-ranking-container").style.display = "none";
             document.getElementById("score").style.display = "none";
+            document.getElementById("game-buttons").style.display = "none";
+            document.getElementById("top-10-container").style.display = "none";
 
-            if (section === "quiz") {
+            if (section === "main") {
+                document.getElementById("game-buttons").style.display = "flex";
+                document.getElementById("top-10-container").style.display = "block";
+            } else if (section === "quiz") {
                 document.getElementById("quiz-container").style.display = "block";
                 currentQuestionIndex = 0;
                 quizScore = 0;
@@ -761,19 +1060,17 @@
             } else if (section === "whack-a-mole") {
                 document.getElementById("whack-a-mole-container").style.display = "block";
                 initWhackAMole();
-            } else if (section === "education") {
-                document.getElementById("education-container").style.display = "block";
-            } else if (section === "placeholder") {
-                document.getElementById("placeholder-container").style.display = "block";
+            } else if (section === "snake") {
+                document.getElementById("snake-container").style.display = "block";
+                initSnakeGame(); // Sicherstellen, dass Snake initialisiert wird
+            } else if (section === "flappy-frog") {
+                document.getElementById("flappy-frog-container").style.display = "block";
+                initFlappyFrog();
             } else if (section === "full-ranking") {
                 document.getElementById("full-ranking-container").style.display = "block";
                 showFullRanking();
             }
         }
-
-        // Education und Placeholder bleiben Platzhalter
-        document.getElementById("education-container").innerHTML = '<div id="education-placeholder">EDUCATION content coming soon! Stay tuned.</div>';
-        document.getElementById("placeholder-container").innerHTML = '<div id="placeholder-placeholder">New game coming soon! Stay tuned.</div>';
     </script>
 </body>
 </html>
