@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ciga Ma Toi</title>
@@ -179,7 +178,7 @@
             justify-content: center;
             margin: 20px auto;
             position: relative;
-            cursor: none /* Hotspot anpassen */
+            cursor: none; /* Hotspot anpassen */
         }
         .memory-card, .mole-hole {
             width: 100px;
@@ -381,6 +380,7 @@
         const progressBar = document.getElementById("progress-bar");
         const frog = document.getElementById("frog");
         const progressContainer = document.getElementById("progress-container");
+        const hammer = document.getElementById("hammer");
         let nickname = '';
 
         function updateCountdown() {
@@ -398,7 +398,7 @@
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${secondsCHIPs`;
 
                 const progress = (1 - timeLeft / totalTime) * 100;
                 progressBar.style.width = `${progress}%`;
@@ -438,25 +438,22 @@
             document.getElementById("top-10-container").style.display = "block";
         }
 
-       window.onload = function() {
-    const savedNickname = localStorage.getItem("nickname");
-    if (savedNickname) {
-        nickname = savedNickname;
-        document.getElementById("nickname-section").style.display = "none";
-        document.getElementById("game-buttons").style.display = "flex";
-        document.getElementById("top-10-container").style.display = "block";
-    }
-    // ENTER aktiviert:
-    document.getElementById("nickname-input").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            submitNickname();
-        }
-    });
-}; // <- GANZ WICHTIG! Diese schließende Klammer + Semikolon fehlt dir!
-
-
-
+        window.onload = function() {
+            const savedNickname = localStorage.getItem("nickname");
+            if (savedNickname) {
+                nickname = savedNickname;
+                document.getElementById("nickname-section").style.display = "none";
+                document.getElementById("game-buttons").style.display = "flex";
+                document.getElementById("top-10-container").style.display = "block";
+            }
+            // ENTER aktiviert:
+            document.getElementById("nickname-input").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    submitNickname();
+                }
+            });
+        };
 
         // Quiz-Logik
         let quizScore = 0;
@@ -515,7 +512,7 @@
             },
             {
                 question: "What key milestone was achieved with the IOTA Rebased vote in December 2024?",
-                options: ["Approval by all token holders", "Launch of the mainnet", "Removal of all validators", "Increase in transaction fees"],
+                options: ["Approval by token holders", "Launch of the mainnet", "Removal of all validators", "Increase in transaction fees"],
                 correct: 0
             },
             {
@@ -681,8 +678,6 @@
         let whackGameActive = false;
         let whackInterval = null;
         const targetImage = "https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/CFB.JPG";
-        const hammerImage = "https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/BANHAMMER.JPG";
-        const hammer = document.getElementById("hammer");
 
         function initWhackAMole() {
             const whackGame = document.getElementById("whack-a-mole-game");
@@ -1073,7 +1068,7 @@
                 initWhackAMole();
             } else if (section === "snake") {
                 document.getElementById("snake-container").style.display = "block";
-                initSnakeGame(); // Sicherstellen, dass Snake initialisiert wird
+                initSnakeGame();
             } else if (section === "flappy-frog") {
                 document.getElementById("flappy-frog-container").style.display = "block";
                 initFlappyFrog();
@@ -1082,30 +1077,29 @@
                 showFullRanking();
             }
         }
-  const hammer = document.getElementById("hammer");
-const whackContainer = document.getElementById("whack-a-mole-container");
 
-whackContainer.addEventListener("mousemove", (e) => {
-    hammer.style.left = `${e.clientX}px`;
-    hammer.style.top = `${e.clientY}px`;
-    hammer.style.display = "block";
-});
+        const whackContainer = document.getElementById("whack-a-mole-container");
 
-whackContainer.addEventListener("mouseleave", () => {
-    hammer.style.display = "none";
-});
+        whackContainer.addEventListener("mousemove", (e) => {
+            hammer.style.left = `${e.clientX}px`;
+            hammer.style.top = `${e.clientY}px`;
+            hammer.style.display = "block";
+        });
 
-whackContainer.addEventListener("mouseenter", () => {
-    hammer.style.display = "block";
-});
+        whackContainer.addEventListener("mouseleave", () => {
+            hammer.style.display = "none";
+        });
 
-whackContainer.addEventListener("click", () => {
-    hammer.style.transform = "translate(-50%, -50%) rotate(-45deg) scale(1.2)";
-    setTimeout(() => {
-        hammer.style.transform = "translate(-50%, -50%) rotate(0deg) scale(1)";
-    }, 100);
-});
+        whackContainer.addEventListener("mouseenter", () => {
+            hammer.style.display = "block";
+        });
 
+        whackContainer.addEventListener("click", () => {
+            hammer.style.transform = "translate(-50%, -50%) rotate(-45deg) scale(1.2)";
+            setTimeout(() => {
+                hammer.style.transform = "translate(-50%, -50%) rotate(0deg) scale(1)";
+            }, 100);
+        });
     </script>
 </body>
 </html>
