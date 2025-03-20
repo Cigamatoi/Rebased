@@ -116,7 +116,7 @@
             margin-top: 10px;
             display: none;
         }
-        #submit-nickname, .game-button, #next-btn, .back-btn, #view-full-ranking, #play-button {
+        #submit-nickname, .game-button, #next-btn, .back-btn, #play-button {
             background: linear-gradient(90deg, #00D4FF, #90E0EF);
             padding: 12px 30px;
             border: none;
@@ -128,7 +128,7 @@
             transition: transform 0.2s, box-shadow 0.3s;
             margin: 10px;
         }
-        #submit-nickname:hover, .game-button:hover, #next-btn:hover, .back-btn:hover, #view-full-ranking:hover, #play-button:hover {
+        #submit-nickname:hover, .game-button:hover, #next-btn:hover, .back-btn:hover, #play-button:hover {
             transform: scale(1.1);
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
         }
@@ -177,15 +177,15 @@
             justify-content: center;
             margin: 20px auto;
             position: relative;
-            cursor: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') 40 40, auto; /* Hammer als Cursor */
+            cursor: none; /* Standard-Mauszeiger ausblenden */
         }
-        .memory-card, .mole-hole {
+        #whack-a-mole-game .mole-hole {
             width: 100px;
             height: 100px;
             background-color: #1A1A2E;
             border: 2px solid #00D4FF;
             border-radius: 50%;
-            cursor: inherit; /* Vererbt den Hammer-Cursor */
+            cursor: none; /* Standard-Mauszeiger ausblenden */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -193,17 +193,49 @@
             transition: transform 0.5s, box-shadow 0.3s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-        .memory-card:hover, .mole-hole:hover {
+        #whack-a-mole-game .mole-hole:hover {
             box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
         }
-        .memory-card img, .mole-hole img.target {
+        #whack-a-mole-game .mole-hole img.target {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
             display: none;
         }
-        .memory-card.flipped img, .memory-card.matched img, .mole-hole.active img.target {
+        #whack-a-mole-game .mole-hole.active img.target {
+            display: block;
+        }
+        #whack-a-mole-game .mole-hole.active {
+            background-color: #00D4FF;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
+        }
+        .memory-card {
+            width: 100px;
+            height: 100px;
+            background-color: #1A1A2E;
+            border: 2px solid #00D4FF;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0;
+            transition: transform 0.5s, box-shadow 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .memory-card:hover {
+            box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
+        }
+        .memory-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: none;
+        }
+        .memory-card.flipped img, .memory-card.matched img {
             display: block;
         }
         .memory-card.flipped, .memory-card.matched {
@@ -211,23 +243,18 @@
             transform: rotateY(180deg);
             box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
         }
-        .mole-hole.active {
-            background-color: #00D4FF;
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
-        }
-        .hammer {
+        .custom-cursor {
             position: absolute;
             width: 80px;
             height: 80px;
             background: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') no-repeat center;
             background-size: contain;
-            display: none;
             pointer-events: none;
-            z-index: 10;
+            z-index: 1000;
             transform: translate(-50%, -50%);
+            display: none; /* Standardmäßig unsichtbar */
         }
-        .hammer-hit {
+        .custom-cursor.hammer-hit {
             animation: hammerSwing 0.3s ease-out;
         }
         @keyframes hammerSwing {
@@ -279,11 +306,11 @@
             #whack-a-mole-game {
                 grid-template-columns: repeat(4, 80px);
             }
-            .mole-hole {
+            #whack-a-mole-game .mole-hole {
                 width: 80px;
                 height: 80px;
             }
-            .hammer {
+            .custom-cursor {
                 width: 64px;
                 height: 64px;
             }
@@ -352,8 +379,8 @@
         <div id="whack-a-mole-game"></div>
         <div id="whack-a-mole-score">Score: 0</div>
         <div id="whack-a-mole-timer">Time: 30s</div>
-        <div class="hammer" id="hammer"></div>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <div class="custom-cursor" id="custom-cursor"></div>
+        <button id="whack-back-btn" class="back-btn" onclick="showSection('main')" style="display: none;">Back</button>
     </div>
 
     <div id="snake-container" style="display: none;">
@@ -393,7 +420,7 @@
         const progressBar = document.getElementById("progress-bar");
         const frog = document.getElementById("frog");
         const progressContainer = document.getElementById("progress-container");
-        const hammer = document.getElementById("hammer");
+        const customCursor = document.getElementById("custom-cursor");
         let nickname = '';
 
         function updateCountdown() {
@@ -648,26 +675,40 @@
         let whackTimer = 30;
         let whackGameActive = false;
         let whackInterval = null;
-        const targetImage = "https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true";
+        const whackGame = document.getElementById("whack-a-mole-game");
+        const whackScoreElement = document.getElementById("whack-a-mole-score");
+        const whackTimerElement = document.getElementById("whack-a-mole-timer");
 
         function initWhackAMole() {
             console.log("Initializing Whack-a-Mole");
-            const whackGame = document.getElementById("whack-a-mole-game");
             whackGame.innerHTML = "";
             whackScore = 0;
             whackTimer = 30;
-            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+            whackGameActive = true;
+            whackScoreElement.textContent = `Score: ${whackScore}`;
+            whackTimerElement.textContent = `Time: ${whackTimer}s`;
+            document.getElementById("whack-back-btn").style.display = "none"; // Back-Button ausblenden
 
             for (let i = 0; i < 16; i++) {
                 const hole = document.createElement("div");
                 hole.classList.add("mole-hole");
-                hole.dataset.index = i;
-                hole.innerHTML = `<img src="${targetImage}" class="target" alt="Head">`;
+                hole.innerHTML = `<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Head">`;
                 hole.addEventListener("click", (e) => whackMole(e, hole));
                 whackGame.appendChild(hole);
             }
-            whackGameActive = true;
+
+            // Custom Cursor für Whack-a-Mole
+            whackGame.addEventListener("mousemove", (e) => {
+                customCursor.style.left = `${e.clientX}px`;
+                customCursor.style.top = `${e.clientY}px`;
+            });
+            whackGame.addEventListener("mouseenter", () => {
+                customCursor.style.display = "block";
+            });
+            whackGame.addEventListener("mouseleave", () => {
+                customCursor.style.display = "none";
+            });
+
             startWhackGame();
         }
 
@@ -677,7 +718,11 @@
                 if (whackTimer <= 0) {
                     clearInterval(whackInterval);
                     whackGameActive = false;
-                    document.getElementById("whack-a-mole-container").style.display = "none";
+                    customCursor.style.display = "none";
+                    whackGame.style.display = "none";
+                    whackScoreElement.style.display = "none";
+                    whackTimerElement.style.display = "none";
+                    document.getElementById("whack-back-btn").style.display = "block";
                     document.getElementById("score").style.display = "block";
                     document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
                     saveScore("whack-a-mole", whackScore);
@@ -685,38 +730,28 @@
                     return;
                 }
                 whackTimer--;
-                document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
-
+                whackTimerElement.textContent = `Time: ${whackTimer}s`;
                 const holes = document.getElementsByClassName("mole-hole");
                 for (let hole of holes) {
                     hole.classList.remove("active");
                 }
-
                 const randomHole = holes[Math.floor(Math.random() * holes.length)];
                 randomHole.classList.add("active");
                 setTimeout(() => {
-                    if (randomHole.classList.contains("active") && whackGameActive) {
-                        randomHole.classList.remove("active");
-                    }
-                }, 1000);
+                    randomHole.classList.remove("active");
+                }, 800);
             }, 1000);
         }
 
         function whackMole(event, hole) {
             if (hole.classList.contains("active") && whackGameActive) {
                 whackScore++;
-                document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+                whackScoreElement.textContent = `Score: ${whackScore}`;
                 hole.classList.remove("active");
-
-                // Hammer-Animation an der Klick-Position
-                hammer.style.left = `${event.clientX}px`;
-                hammer.style.top = `${event.clientY}px`;
-                hammer.style.display = "block";
-                hammer.classList.add("hammer-hit");
+                customCursor.classList.add("hammer-hit");
                 setTimeout(() => {
-                    hammer.style.display = "none";
-                    hammer.classList.remove("hammer-hit");
-                }, 300); // Dauer der Animation
+                    customCursor.classList.remove("hammer-hit");
+                }, 300);
             }
             event.stopPropagation();
         }
@@ -1047,6 +1082,7 @@
                 if (whackGameActive) {
                     whackGameActive = false;
                     clearInterval(whackInterval);
+                    customCursor.style.display = "none";
                 }
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
@@ -1060,6 +1096,9 @@
                 initMemoryGame();
             } else if (section === "whack-a-mole") {
                 document.getElementById("whack-a-mole-container").style.display = "block";
+                whackGame.style.display = "grid";
+                whackScoreElement.style.display = "block";
+                whackTimerElement.style.display = "block";
                 initWhackAMole();
             } else if (section === "snake") {
                 document.getElementById("snake-container").style.display = "block";
