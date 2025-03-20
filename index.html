@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ciga Ma Toi</title>
@@ -445,7 +446,15 @@
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
             }
-        };
+            // ENTER aktiviert:
+document.getElementById("nickname-input").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submitNickname();
+  }
+});
+
+
 
         // Quiz-Logik
         let quizScore = 0;
