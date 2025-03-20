@@ -177,7 +177,7 @@
             justify-content: center;
             margin: 20px auto;
             position: relative;
-            cursor: none;
+            cursor: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') 40 40, auto; /* Hammer als Cursor */
         }
         .memory-card, .mole-hole {
             width: 100px;
@@ -185,7 +185,7 @@
             background-color: #1A1A2E;
             border: 2px solid #00D4FF;
             border-radius: 50%;
-            cursor: pointer;
+            cursor: inherit; /* Vererbt den Hammer-Cursor */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -220,14 +220,20 @@
             position: absolute;
             width: 80px;
             height: 80px;
-            background: url('https://raw.githubusercontent.com/Cigamatoi/Rebased/refs/heads/main/BANHAMMER.png') no-repeat center; /* Änderung 8 */
+            background: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') no-repeat center;
             background-size: contain;
-            background-color: transparent;
-            display: none;
+            display: none; /* Nur für Animation sichtbar */
             pointer-events: none;
             z-index: 10;
-            transition: opacity 0.1s;
             transform: translate(-50%, -50%);
+        }
+        .hammer-hit {
+            animation: hammerSwing 0.3s ease-out;
+        }
+        @keyframes hammerSwing {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(-50%, -50%) rotate(-45deg) scale(1.2); }
+            100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
         }
         #snake-canvas {
             border: 2px solid #00D4FF;
@@ -642,7 +648,7 @@
         let whackTimer = 30;
         let whackGameActive = false;
         let whackInterval = null;
-        const targetImage = "https://raw.githubusercontent.com/Cigamatoi/Rebased/refs/heads/main/CFB.png"; // Änderung 8
+        const targetImage = "https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true";
 
         function initWhackAMole() {
             console.log("Initializing Whack-a-Mole");
@@ -702,37 +708,31 @@
                 document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
                 hole.classList.remove("active");
 
-                const rect = hole.getBoundingClientRect();
-                hammer.style.left = `${rect.left - window.scrollX + rect.width / 2}px`;
-                hammer.style.top = `${rect.top - window.scrollY + rect.height / 2}px`;
+                // Hammer-Animation an der Klick-Position
+                hammer.style.left = `${event.clientX}px`;
+                hammer.style.top = `${event.clientY}px`;
                 hammer.style.display = "block";
+                hammer.classList.add("hammer-hit");
                 setTimeout(() => {
                     hammer.style.display = "none";
-                }, 100);
+                    hammer.classList.remove("hammer-hit");
+                }, 300); // Dauer der Animation
             }
             event.stopPropagation();
         }
 
+        // Alte Hammer-Bewegungslogik entfernen
         const whackContainer = document.getElementById("whack-a-mole-container");
-        whackContainer.addEventListener("mousemove", (e) => {
-            const rect = whackContainer.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            hammer.style.left = `${x}px`;
-            hammer.style.top = `${y}px`;
+        whackContainer.addEventListener("click", (e) => {
+            if (!whackGameActive) return; // Nur während des Spiels
+            hammer.style.left = `${e.clientX}px`;
+            hammer.style.top = `${e.clientY}px`;
             hammer.style.display = "block";
-        });
-        whackContainer.addEventListener("mouseleave", () => {
-            hammer.style.display = "none";
-        });
-        whackContainer.addEventListener("mouseenter", () => {
-            hammer.style.display = "block";
-        });
-        whackContainer.addEventListener("click", () => {
-            hammer.style.transform = "translate(-50%, -50%) rotate(-45deg) scale(1.2)";
+            hammer.classList.add("hammer-hit");
             setTimeout(() => {
-                hammer.style.transform = "translate(-50%, -50%) rotate(0deg) scale(1)";
-            }, 100);
+                hammer.style.display = "none";
+                hammer.classList.remove("hammer-hit");
+            }, 300);
         });
 
         const snakeCanvas = document.getElementById("snake-canvas");
