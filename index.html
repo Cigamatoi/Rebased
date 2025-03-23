@@ -6,6 +6,7 @@
     <title>REBASED WAITING ROOM</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        /* Der gesamte CSS-Code bleibt unverändert */
         body {
             font-family: 'Roboto', sans-serif;
             background: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%);
@@ -574,8 +575,7 @@
             }
 
             nickname = inputValue;
-            localStorage.setItem("nickname", nickname);
-            console.log("Nickname saved:", nickname);
+            console.log("Nickname set:", nickname);
 
             errorElement.style.display = "none";
             document.getElementById("nickname-section").style.display = "none";
@@ -599,19 +599,6 @@
             } else {
                 console.error("Nickname input not found on DOM load");
             }
-
-            const savedNickname = localStorage.getItem("nickname");
-            if (savedNickname) {
-                nickname = savedNickname;
-                document.getElementById("nickname-section").style.display = "none";
-                document.getElementById("game-buttons").style.display = "flex";
-                document.getElementById("top-10-container").style.display = "block";
-                showTab('quiz');
-                console.log("Loaded saved nickname:", nickname);
-            }
-
-            // Bereinigung der Leaderboard-Daten
-            removeDuplicates();
         });
 
         let quizScore = 0;
@@ -865,8 +852,7 @@
             lastFrameTime = performance.now();
 
             let moleTimer = 0;
-            let moleInterval = Math.random() * 500 + 500; // Zufälliges Intervall zwischen 500 und 1000 ms
-            console.log("Initial mole interval:", moleInterval);
+            let moleInterval = Math.random() * 500 + 500;
 
             function gameLoop(currentTime) {
                 if (!whackGameActive) {
@@ -895,8 +881,7 @@
                     const randomHole = holes[Math.floor(Math.random() * holes.length)];
                     randomHole.classList.add("active");
                     moleTimer = 0;
-                    moleInterval = Math.random() * 500 + 500; // Neues zufälliges Intervall
-                    console.log("New mole interval:", moleInterval);
+                    moleInterval = Math.random() * 500 + 500;
                 }
 
                 requestAnimationFrame(gameLoop);
@@ -934,7 +919,6 @@
             document.getElementById("snake-back-btn-during").style.display = "block";
             document.addEventListener("keydown", changeDirection);
             drawSnakeGame();
-            console.log("Waiting for W, A, S, or D to start");
         }
 
         function startSnakeGame() {
@@ -1167,73 +1151,84 @@
             }
         }
 
-        function removeDuplicates() {
-            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            const map = new Map();
+        async function saveScore(gameType, gameScore) {
+            try {
+                const response = await fetch('http://localhost:3000/api/save-score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nickname,
+                        gameType,
+                        score: gameScore,
+                    }),
+                });
 
-            rankings.forEach(entry => {
-                const key = `${entry.nickname}-${entry.gameType}`;
-                if (!map.has(key)) {
-                    map.set(key, entry);
-                } else {
-                    const existing = map.get(key);
-                    if (entry.gameType === "memory") {
-                        if (entry.score < existing.score) map.set(key, entry);
-                    } else {
-                        if (entry.score > existing.score) map.set(key, entry);
-                    }
+                if (!response.ok) {
+                    throw new Error('Failed to save score');
                 }
-            });
 
-            const uniqueRankings = Array.from(map.values());
-            localStorage.setItem("rankings", JSON.stringify(uniqueRankings));
-        }
-
-        function saveScore(gameType, gameScore) {
-            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            const existingEntries = rankings.filter(entry => entry.nickname === nickname && entry.gameType === gameType);
-            let bestScore = gameScore;
-
-            if (existingEntries.length > 0) {
-                if (gameType === "memory") {
-                    bestScore = Math.min(...existingEntries.map(entry => entry.score), gameScore);
-                } else {
-                    bestScore = Math.max(...existingEntries.map(entry => entry.score), gameScore);
-                }
+                console.log(`Score saved for ${nickname} in ${gameType}: ${gameScore}`);
+            } catch (error) {
+                console.error('Error saving score:', error);
             }
-
-            rankings = rankings.filter(entry => !(entry.nickname === nickname && entry.gameType === gameType));
-            rankings.push({ nickname, gameType, score: bestScore });
-
-            rankings.sort((a, b) => {
-                if (a.gameType === "memory" && b.gameType === "memory") return a.score - b.score;
-                return b.score - a.score;
-            });
-
-            localStorage.setItem("rankings", JSON.stringify(rankings));
         }
 
-        function updateTop10(activeTab) {
-            const top10List = document.getElementById("top-10-list");
-            top10List.innerHTML = "";
-            const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            const filteredRankings = rankings.filter(entry => entry.gameType === activeTab);
-            const top10 = filteredRankings.slice(0, 10);
-            top10.forEach(entry => {
-                const li = document.createElement("li");
-                if (entry.gameType === "quiz") {
-                    li.textContent = `${entry.nickname}: ${entry.score}/${questions.length}`;
-                } else if (entry.gameType === "memory") {
-                    li.textContent = `${entry.nickname}: ${entry.score} moves`;
-                } else if (entry.gameType === "whack-a-mole") {
-                    li.textContent = `${entry.nickname}: ${entry.score} points`;
-                } else if (entry.gameType === "snake") {
-                    li.textContent = `${entry.nickname}: ${entry.score} points`;
-                } else if (entry.gameType === "flappy-frog") {
-                    li.textContent = `${entry.nickname}: ${entry.score} points`;
-                }
-                top10List.appendChild(li);
-            });
+        async function updateTop10(activeTab) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/top10?gameType=${activeTab}`);
+                const top10 = await response.json();
+
+                const top10List = document.getElementById("top-10-list");
+                top10List.innerHTML = "";
+
+                top10.forEach(entry => {
+                    const li = document.createElement("li");
+                    if (entry.gameType === "quiz") {
+                        li.textContent = `${entry.nickname}: ${entry.score}/${questions.length}`;
+                    } else if (entry.gameType === "memory") {
+                        li.textContent = `${entry.nickname}: ${entry.score} moves`;
+                    } else if (entry.gameType === "whack-a-mole") {
+                        li.textContent = `${entry.nickname}: ${entry.score} points`;
+                    } else if (entry.gameType === "snake") {
+                        li.textContent = `${entry.nickname}: ${entry.score} points`;
+                    } else if (entry.gameType === "flappy-frog") {
+                        li.textContent = `${entry.nickname}: ${entry.score} points`;
+                    }
+                    top10List.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching top 10:', error);
+            }
+        }
+
+        async function showFullRanking() {
+            try {
+                const response = await fetch('http://localhost:3000/api/full-ranking');
+                const rankings = await response.json();
+
+                const fullRankingList = document.getElementById("full-ranking-list");
+                fullRankingList.innerHTML = "";
+
+                rankings.forEach(entry => {
+                    const li = document.createElement("li");
+                    if (entry.gameType === "quiz") {
+                        li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
+                    } else if (entry.gameType === "memory") {
+                        li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
+                    } else if (entry.gameType === "whack-a-mole") {
+                        li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                    } else if (entry.gameType === "snake") {
+                        li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
+                    } else if (entry.gameType === "flappy-frog") {
+                        li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
+                    }
+                    fullRankingList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching full ranking:', error);
+            }
         }
 
         function showTab(gameType) {
@@ -1245,27 +1240,6 @@
                 }
             });
             updateTop10(gameType);
-        }
-
-        function showFullRanking() {
-            const fullRankingList = document.getElementById("full-ranking-list");
-            fullRankingList.innerHTML = "";
-            const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            rankings.forEach(entry => {
-                const li = document.createElement("li");
-                if (entry.gameType === "quiz") {
-                    li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
-                } else if (entry.gameType === "memory") {
-                    li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
-                } else if (entry.gameType === "whack-a-mole") {
-                    li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
-                } else if (entry.gameType === "snake") {
-                    li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
-                } else if (entry.gameType === "flappy-frog") {
-                    li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
-                }
-                fullRankingList.appendChild(li);
-            });
         }
 
         function showSection(section) {
